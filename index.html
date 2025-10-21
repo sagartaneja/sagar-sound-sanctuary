@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sagar's Sound Sanctuary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #f4e4bc;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #e94560, #f39c12, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a7a7a7;
+            font-style: italic;
+        }
+
+        .jukebox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .mood-card {
+            background: linear-gradient(145deg, rgba(233, 69, 96, 0.1), rgba(15, 52, 96, 0.3));
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(233, 69, 96, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .mood-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(233, 69, 96, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .mood-card:hover::before {
+            opacity: 1;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .mood-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            border-color: #e94560;
+            box-shadow: 0 20px 60px rgba(233, 69, 96, 0.4);
+        }
+
+        .mood-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 5px 15px rgba(233, 69, 96, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .mood-card:hover .mood-icon {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 10px 25px rgba(233, 69, 96, 0.6));
+        }
+
+        .mood-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #f4e4bc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mood-description {
+            font-size: 1rem;
+            color: #a7a7a7;
+            line-height: 1.6;
+        }
+
+        .now-playing {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(15, 52, 96, 0.4));
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: center;
+            border: 2px solid rgba(233, 69, 96, 0.3);
+            display: none;
+        }
+
+        .now-playing.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .now-playing h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .close-button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .close-button:hover {
+            background: #f39c12;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #a7a7a7;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(233, 69, 96, 0.2);
+            margin-top: 60px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mood-card:nth-child(1) { animation-delay: 0.1s; }
+        .mood-card:nth-child(2) { animation-delay: 0.2s; }
+        .mood-card:nth-child(3) { animation-delay: 0.3s; }
+        .mood-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .jukebox-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .mood-card {
+                padding: 30px;
+            }
+            
+            .mood-icon {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">🎵 Sagar's Daily Jukebox</h1>
+            <p class="subtitle">Choose your mood, set your vibe</p>
+        </div>
+
+        <div class="jukebox-grid">
+            <div class="mood-card" onclick="playMood('meditate', 'Meditate')">
+                <span class="mood-icon">🧘</span>
+                <h2 class="mood-title">Meditate</h2>
+                <p class="mood-description">Find inner peace with calming meditation sounds</p>
+            </div>
+
+            <div class="mood-card" onclick="playMood('deepwork', 'Deep Work')">
+                <span class="mood-icon">⚔️</span>
+                <h2 class="mood-title">Deep Work</h2>
+                <p class="mood-description">Medieval lofi beats to conquer your tasks</p>
+            </div>
+
+            <div class="mood-card" onclick="playMood('relax', 'Relax')">
+                <span class="mood-icon">🔥</span>
+                <h2 class="mood-title">Relax</h2>
+                <p class="mood-description">Cozy fireplace with crackling warmth</p>
+            </div>
+
+            <div class="mood-card" onclick="playMood('chill', 'Chill')">
+                <span class="mood-icon">🎷</span>
+                <h2 class="mood-title">Chill</h2>
+                <p class="mood-description">Smooth jazz vibes for easy listening</p>
+            </div>
+        </div>
+
+        <div class="now-playing" id="nowPlaying">
+            <h2>Now Playing: <span id="moodName"></span></h2>
+            <div class="video-container" id="videoContainer"></div>
+            <button class="close-button" onclick="closePlayer()">Close Player</button>
+        </div>
+
+        <div class="footer">
+            <p>✨ Created with vibes by Sagar Taneja • Powered by mood and music ✨</p>
+        </div>
+    </div>
+
+    <script>
+        // Create twinkling stars
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        // YouTube video URLs
+        const moodVideos = {
+            meditate: 'https://www.youtube.com/embed/a98zkXRKeCs',
+            deepwork: 'https://www.youtube.com/embed/IxPANmjPaek',
+            relax: 'https://www.youtube.com/embed/BVdHrTfO2PE',
+            chill: 'https://www.youtube.com/embed/H4UY5FHWo1E'
+        };
+
+        function playMood(mood, moodTitle) {
+            const nowPlaying = document.getElementById('nowPlaying');
+            const videoContainer = document.getElementById('videoContainer');
+            const moodName = document.getElementById('moodName');
+            
+            // Set the mood name
+            moodName.textContent = moodTitle;
+            
+            // Create iframe with autoplay
+            const videoUrl = moodVideos[mood] + '?autoplay=1&loop=1&playlist=' + moodVideos[mood].split('/').pop();
+            videoContainer.innerHTML = `<iframe src="${videoUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            
+            // Show the player
+            nowPlaying.classList.add('active');
+            
+            // Smooth scroll to player
+            nowPlaying.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function closePlayer() {
+            const nowPlaying = document.getElementById('nowPlaying');
+            const videoContainer = document.getElementById('videoContainer');
+            
+            // Stop the video by clearing the container
+            videoContainer.innerHTML = '';
+            
+            // Hide the player
+            nowPlaying.classList.remove('active');
+            
+            // Scroll back to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
